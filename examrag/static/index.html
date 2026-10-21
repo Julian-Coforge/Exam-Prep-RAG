@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exam prep</title>
+  <style>
+    :root {
+      --bg: #1a1713;
+      --rail: #14110e;
+      --ink: #f3ecdf;
+      --muted: #a89884;
+      --line: #3a3128;
+      --card: #241e18;
+      --accent: #e0a15a;
+      --accent-ink: #2a1c0c;
+      --good: #c8d5b5;
+      --danger: #e7b2a4;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1200px 500px at 10% -10%, rgba(224, 161, 90, 0.08), transparent 50%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+    }
+
+    button, input, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      height: 100%;
+      min-height: 100vh;
+    }
+
+    .rail {
+      background: var(--rail);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .brand {
+      padding: 22px 20px 12px;
+    }
+    .kicker {
+      margin: 0;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .brand h1 {
+      margin: 6px 0 0;
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+    }
+    .brand p.sub {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .rail-actions {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 12px;
+    }
+    .rail-actions button, .mode button, .send, .chip {
+      border: 1px solid var(--line);
+      background: transparent;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 13px;
+    }
+    .rail-actions button:hover, .mode button:hover, .chip:hover { border-color: var(--accent); color: var(--accent); }
+    .library {
+      overflow: auto;
+      padding: 4px 10px 16px;
+      min-height: 0;
+    }
+    .week-label {
+      margin: 16px 8px 6px;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .doc {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: block;
+    }
+    .doc strong {
+      display: block;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+    .doc span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 12px;
+    }
+    .doc.active, .doc:hover { background: #2a241c; }
+    .status-line {
+      margin-top: auto;
+      padding: 14px 18px 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .desk {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+    }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .mode { display: flex; gap: 8px; }
+    .mode button.active {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border-color: var(--accent);
+    }
+    .scope {
+      margin: 0;
+      color: var(--muted);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .thread {
+      flex: 1;
+      overflow: auto;
+      padding: 28px 8vw 12px;
+    }
+    .empty { max-width: 720px; margin: 8vh auto 0; }
+    .empty h2 {
+      margin: 0 0 8px;
+      font-size: 42px;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+    }
+    .empty p { margin: 0 0 18px; color: var(--muted); font-size: 18px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { border-radius: 12px; text-align: left; line-height: 1.35; }
+
+    .turn { max-width: 760px; margin: 0 auto 22px; }
+    .turn.user { display: flex; justify-content: flex-end; }
+    .bubble {
+      padding: 2px 0;
+      line-height: 1.55;
+      font-size: 18px;
+    }
+    .turn.user .bubble {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px 16px 4px 16px;
+      padding: 12px 16px;
+      max-width: 80%;
+      white-space: pre-wrap;
+    }
+    .bubble p { margin: 0 0 12px; }
+    .bubble ul, .bubble ol { margin: 0 0 12px; padding-left: 1.2em; }
+    .bubble li { margin: 4px 0; }
+    .bubble code {
+      font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.86em;
+      background: #120f0c;
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    .bubble pre {
+      background: #100e0b;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      overflow: auto;
+      font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+    .bubble pre code { background: none; padding: 0; }
+    .cite {
+      border: 0;
+      background: #3a2d1e;
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 0 6px;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 12px;
+      vertical-align: super;
+    }
+    .note {
+      color: var(--muted);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .error { color: var(--danger); }
+
+    .sources {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .source {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .source-toggle {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 12px;
+      line-height: 1.4;
+      padding: 10px 12px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .source-toggle::after {
+      content: "Show";
+      color: var(--muted);
+      flex: none;
+    }
+    .source.open .source-toggle::after { content: "Hide"; }
+    .source-body { display: none; padding: 0 12px 12px; }
+    .source.open .source-body { display: block; }
+    .source p {
+      margin: 0;
+      color: var(--good);
+      font-size: 14px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .composer-wrap {
+      padding: 8px 8vw 22px;
+    }
+    form.composer {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+      background: #221c17;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+    }
+    textarea {
+      width: 100%;
+      resize: none;
+      border: 0;
+      background: transparent;
+      padding: 8px 8px 4px;
+      min-height: 52px;
+      max-height: 180px;
+      outline: none;
+      font-size: 17px;
+      line-height: 1.4;
+    }
+    .send {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border-color: transparent;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-weight: 600;
+    }
+    .send:disabled { opacity: 0.45; cursor: default; }
+
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .rail { display: none; }
+      .rail.open {
+        display: flex;
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(320px, 88vw);
+        z-index: 5;
+      }
+      .empty h2 { font-size: 32px; }
+      .thread, .composer-wrap { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail" id="rail">
+      <div class="brand">
+        <p class="kicker">Course notes</p>
+        <h1>Exam desk</h1>
+        <p class="sub">Ask anything in the Week 1 and Week 2 readings. Answers stay tied to the page they came from.</p>
+      </div>
+      <div class="rail-actions">
+        <button type="button" id="all-notes">All notes</button>
+        <button type="button" id="rebuild">Rebuild index</button>
+      </div>
+      <nav class="library" id="library" aria-label="Documents"></nav>
+      <div class="status-line" id="status-line">Loading the index…</div>
+    </aside>
+
+    <section class="desk">
+      <header class="top">
+        <div class="mode" role="tablist" aria-label="Study mode">
+          <button type="button" class="active" data-mode="ask">Ask</button>
+          <button type="button" data-mode="quiz">Quiz</button>
+          <button type="button" data-mode="outline">Revise</button>
+        </div>
+        <p class="scope" id="scope">All notes</p>
+      </header>
+      <div class="thread" id="thread"></div>
+      <div class="composer-wrap">
+        <form class="composer" id="composer">
+          <textarea id="question" rows="2" placeholder="Ask about a concept, command, or distinction"></textarea>
+          <button class="send" id="send" type="submit">Ask</button>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const state = {
+      mode: "ask",
+      week: null,
+      source: null,
+      title: null,
+      history: [],
+      busy: false,
+    };
+
+    const prompts = {
+      ask: [
+        "What problem does a virtual environment solve?",
+        "How is polymorphism different from inheritance?",
+        "What does red, green, refactor mean in pytest?",
+        "How is a GitHub Actions job structured?",
+      ],
+      quiz: [
+        "Quiz me on encapsulation",
+        "Quiz me on git branching",
+        "Quiz me on test plans",
+      ],
+      outline: [
+        "Revision sheet for the SDLC phases",
+        "Revision sheet for lists and nested lists",
+        "Revision sheet for CI/CD with GitHub Actions",
+      ],
+    };
+
+    const thread = document.getElementById("thread");
+    const question = document.getElementById("question");
+    const send = document.getElementById("send");
+    const scope = document.getElementById("scope");
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function renderMarkdown(source) {
+      const fences = [];
+      let text = source.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+        fences.push(`<pre><code>${escapeHtml(code.replace(/\n$/, ""))}</code></pre>`);
+        return `@@FENCE${fences.length - 1}@@`;
+      });
+      text = escapeHtml(text);
+      text = text.replace(/`([^`\n]+)`/g, (_, code) => `<code>${code}</code>`);
+      text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      text = text.replace(/\[(\d+(?:\s*,\s*\d+)*)\]/g, (_, group) =>
+        group.split(/\s*,\s*/).map((n) => `<button type="button" class="cite" data-cite="${n}">[${n}]</button>`).join(" ")
+      );
+
+      const lines = text.split("\n");
+      const html = [];
+      let list = null;
+      const closeList = () => {
+        if (list) {
+          html.push(list === "ol" ? "</ol>" : "</ul>");
+          list = null;
+        }
+      };
+      for (const line of lines) {
+        const fence = line.match(/^@@FENCE(\d+)@@$/);
+        if (fence) {
+          closeList();
+          html.push(fences[Number(fence[1])]);
+          continue;
+        }
+        const bullet = line.match(/^\s*[-*] (.+)$/);
+        const numbered = line.match(/^\s*\d+\. (.+)$/);
+        if (bullet || numbered) {
+          const kind = numbered ? "ol" : "ul";
+          if (list !== kind) {
+            closeList();
+            list = kind;
+            html.push(kind === "ol" ? "<ol>" : "<ul>");
+          }
+          html.push(`<li>${(bullet || numbered)[1]}</li>`);
+          continue;
+        }
+        closeList();
+        if (!line.trim()) continue;
+        html.push(`<p>${line}</p>`);
+      }
+      closeList();
+      return html.join("");
+    }
+
+    function showEmpty() {
+      const ideas = prompts[state.mode];
+      thread.innerHTML = `
+        <div class="empty">
+          <h2>${state.mode === "quiz" ? "Be examined." : state.mode === "outline" ? "Make a revision sheet." : "Ask the notes."}</h2>
+          <p>${state.mode === "quiz"
+            ? "Name a topic. The tutor will ask one question from the readings, then mark your answer."
+            : "Answers are written from the indexed PDFs, with the page beside the claim."}</p>
+          <div class="chips">
+            ${ideas.map((idea) => `<button type="button" class="chip" data-prompt="${escapeHtml(idea)}">${escapeHtml(idea)}</button>`).join("")}
+          </div>
+        </div>`;
+    }
+
+    function setScopeLabel() {
+      scope.textContent = state.title || "All notes";
+    }
+
+    async function loadLibrary() {
+      const response = await fetch("/api/status");
+      const status = await response.json();
+      const libraryResponse = await fetch("/api/library");
+      const library = await libraryResponse.json();
+      const nav = document.getElementById("library");
+      nav.innerHTML = (library.weeks || []).map((week) => `
+        <div class="week-label">${escapeHtml(week.week)}</div>
+        ${week.documents.map((doc) => `
+          <button type="button" class="doc${state.source === doc.source ? " active" : ""}" data-source="${escapeHtml(doc.source)}" data-week="${escapeHtml(doc.week)}" data-title="${escapeHtml(doc.title)}">
+            <strong>${escapeHtml(doc.title)}</strong>
+            <span>${doc.chunks} passages · ${doc.page_end} pages</span>
+          </button>`).join("")}
+      `).join("");
+      const model = status.model || "local model";
+      document.getElementById("status-line").textContent = status.ready
+        ? `${status.chunks} passages from ${status.documents} documents. Answers use ${model} on this machine.`
+        : "The index is empty. Rebuild it to start asking questions.";
+    }
+
+    function appendTurn(role, text) {
+      const empty = thread.querySelector(".empty");
+      if (empty) empty.remove();
+      const turn = document.createElement("article");
+      turn.className = `turn ${role}`;
+      turn.innerHTML = `<div class="bubble"></div>`;
+      thread.appendChild(turn);
+      const bubble = turn.querySelector(".bubble");
+      if (role === "user") bubble.textContent = text;
+      else bubble.innerHTML = text ? renderMarkdown(text) : "";
+      thread.scrollTop = thread.scrollHeight;
+      return turn;
+    }
+
+    function sourcesHtml(sources) {
+      if (!sources || !sources.length) return "";
+      return `<div class="sources">${sources.map((source) => `
+        <article class="source" data-n="${source.n}">
+          <button type="button" class="source-toggle" aria-expanded="false">[${source.n}] ${escapeHtml(source.label)}</button>
+          <div class="source-body"><p>${escapeHtml(source.excerpt)}</p></div>
+        </article>`).join("")}</div>`;
+    }
+
+    function openSource(card) {
+      if (!card) return;
+      card.classList.add("open");
+      const toggle = card.querySelector(".source-toggle");
+      if (toggle) toggle.setAttribute("aria-expanded", "true");
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    async function ask(text) {
+      const message = text.trim();
+      if (!message || state.busy) return;
+      state.busy = true;
+      send.disabled = true;
+      question.value = "";
+      appendTurn("user", message);
+      const turn = appendTurn("assistant", "");
+      const bubble = turn.querySelector(".bubble");
+      let answerText = "";
+      let sources = [];
+      bubble.innerHTML = `<p class="note">Searching the notes…</p>`;
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message,
+            history: state.history,
+            mode: state.mode,
+            week: state.week,
+            source: state.source,
+          }),
+        });
+        if (!response.ok || !response.body) throw new Error("The tutor could not be reached.");
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          let split;
+          while ((split = buffer.indexOf("\n\n")) >= 0) {
+            const raw = buffer.slice(0, split).trim();
+            buffer = buffer.slice(split + 2);
+            if (!raw.startsWith("data:")) continue;
+            const event = JSON.parse(raw.slice(5).trim());
+            if (event.type === "status") {
+              if (!answerText) bubble.innerHTML = `<p class="note">${escapeHtml(event.text)}…</p>`;
+            } else if (event.type === "token") {
+              answerText += event.text;
+              bubble.innerHTML = renderMarkdown(answerText);
+            } else if (event.type === "sources") {
+              sources = event.sources || [];
+            } else if (event.type === "error") {
+              bubble.insertAdjacentHTML("beforeend", `<p class="error">${escapeHtml(event.text)}</p>`);
+            }
+            thread.scrollTop = thread.scrollHeight;
+          }
+        }
+        if (sources.length) {
+          bubble.insertAdjacentHTML("beforeend", sourcesHtml(sources));
+        }
+        if (answerText.trim()) {
+          state.history.push({ role: "user", content: message });
+          state.history.push({ role: "assistant", content: answerText });
+          if (state.history.length > 8) state.history = state.history.slice(-8);
+        }
+      } catch (error) {
+        bubble.innerHTML = `<p class="error">${escapeHtml(error.message || "Something went wrong.")}</p>`;
+      } finally {
+        state.busy = false;
+        send.disabled = false;
+        question.focus();
+      }
+    }
+
+    document.getElementById("composer").addEventListener("submit", (event) => {
+      event.preventDefault();
+      ask(question.value);
+    });
+    question.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        ask(question.value);
+      }
+    });
+    document.querySelector(".mode").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-mode]");
+      if (!button) return;
+      state.mode = button.dataset.mode;
+      document.querySelectorAll(".mode button").forEach((item) => item.classList.toggle("active", item === button));
+      send.textContent = state.mode === "quiz" ? "Quiz" : state.mode === "outline" ? "Revise" : "Ask";
+      question.placeholder = state.mode === "quiz"
+        ? "Name a topic, or answer the question"
+        : state.mode === "outline"
+          ? "What should the revision sheet cover?"
+          : "Ask about a concept, command, or distinction";
+      if (!state.history.length) showEmpty();
+    });
+    thread.addEventListener("click", (event) => {
+      const prompt = event.target.closest("[data-prompt]");
+      if (prompt) {
+        ask(prompt.dataset.prompt);
+        return;
+      }
+      const toggle = event.target.closest(".source-toggle");
+      if (toggle) {
+        const card = toggle.closest(".source");
+        const open = !card.classList.contains("open");
+        card.classList.toggle("open", open);
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        return;
+      }
+      const cite = event.target.closest("[data-cite]");
+      if (cite) {
+        const turn = cite.closest(".turn");
+        const card = turn && turn.querySelector(`.source[data-n="${cite.dataset.cite}"]`);
+        openSource(card);
+      }
+    });
+    document.getElementById("library").addEventListener("click", (event) => {
+      const button = event.target.closest(".doc");
+      if (!button) return;
+      state.source = button.dataset.source;
+      state.week = button.dataset.week;
+      state.title = button.dataset.title;
+      setScopeLabel();
+      document.querySelectorAll(".doc").forEach((item) => item.classList.toggle("active", item === button));
+    });
+    document.getElementById("all-notes").addEventListener("click", () => {
+      state.source = null;
+      state.week = null;
+      state.title = null;
+      setScopeLabel();
+      document.querySelectorAll(".doc").forEach((item) => item.classList.remove("active"));
+    });
+    document.getElementById("rebuild").addEventListener("click", async () => {
+      const line = document.getElementById("status-line");
+      line.textContent = "Re-reading the PDFs and rebuilding the index…";
+      const response = await fetch("/api/rebuild", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ force: true }),
+      });
+      if (!response.ok) {
+        line.textContent = "Rebuild failed.";
+        return;
+      }
+      await loadLibrary();
+    });
+
+    showEmpty();
+    loadLibrary();
+    question.focus();
+  </script>
+</body>
+</html>
